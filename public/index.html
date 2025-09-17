@@ -12,22 +12,32 @@
     <p>Download videos from YouTube, Instagram, Facebook, and TikTok instantly!</p>
   </header>
   <main>
-    <div class="media-card">
-      <img src="https://via.placeholder.com/150" alt="Media Preview" class="preview">
-      <h2>Xem video này trước khi điện thoại hủy hoại bạn...</h2>
-      <div class="download-options">
-        <button class="download-btn mp4">🎥 MP4 Video</button>
-        <button class="download-btn mp3">🎵 Audio Only (MP3)</button>
-      </div>
+    <div class="input-container">
       <input type="url" id="link" placeholder="Nhập link media..." required>
       <button id="submit-btn">Tải Về</button>
     </div>
     <div id="loading" class="hidden">Đang tải...</div>
-    <div id="result" class="hidden"></div>
+    <div id="result-container" class="hidden">
+      <div id="hd-frame" class="media-frame">
+        <h3>HD No Watermark</h3>
+        <button class="copy-btn">Copy Link</button>
+        <button class="download-btn">Tải Về</button>
+      </div>
+      <div id="sd-frame" class="media-frame">
+        <h3>SD No Watermark</h3>
+        <button class="copy-btn">Copy Link</button>
+        <button class="download-btn">Tải Về</button>
+      </div>
+      <div id="audio-frame" class="media-frame">
+        <h3>Audio Only</h3>
+        <button class="copy-btn">Copy Link</button>
+        <button class="download-btn">Tải Về</button>
+      </div>
+    </div>
     <div id="error" class="hidden"></div>
   </main>
   <footer>
-    <p>Powered by Chill-Downloader</p>
+    <p>Developed by TKhanh | Nakano Miku - 2025 🇻🇳🇻🇳🇻🇳</p>
   </footer>
   <script src="tkhanh.js"></script>
 </body>
