@@ -5,10 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultContainer = document.getElementById('result-container');
   const errorDiv = document.getElementById('error');
 
-  const hdFrame = document.getElementById('hd-frame');
-  const sdFrame = document.getElementById('sd-frame');
-  const audioFrame = document.getElementById('audio-frame');
-
   let mediaData = {};
 
   submitBtn.addEventListener('click', async () => {
@@ -18,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loading.classList.remove('hidden');
     resultContainer.classList.add('hidden');
     errorDiv.classList.add('hidden');
+    resultContainer.innerHTML = ''; // Clear previous frames
 
     try {
       const response = await fetch(`/download?url=${encodeURIComponent(link)}`);
@@ -25,8 +22,52 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       mediaData = data.data || {}; // Assuming { hd_no_watermark: 'url', sd_no_watermark: 'url', audio: 'url' }
 
-      // Show frames if data exists
-      if (mediaData.hd_no_watermark || mediaData.sd_no_watermark || mediaData.audio) {
+      // Dynamically create frames only if data exists
+      const types = [
+        { id: 'hd', title: 'HD No Watermark', key: 'hd_no_watermark', ext: 'mp4' },
+        { id: 'sd', title: 'SD No Watermark', key: 'sd_no_watermark', ext: 'mp4' },
+        { id: 'audio', title: 'Audio Only', key: 'audio', ext: 'mp3' }
+      ];
+
+      types.forEach(type => {
+        const url = mediaData[type.key];
+        if (url) {
+          const frame = document.createElement('div');
+          frame.className = 'media-frame';
+          frame.id = `${type.id}-frame`;
+          frame.innerHTML = `
+            <h3>${type.title}</h3>
+            <button class="copy-btn">Copy Link</button>
+            <button class="download-btn">Tải Về</button>
+          `;
+          resultContainer.appendChild(frame);
+
+          // Add event listeners
+          frame.querySelector('.copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(url).then(() => alert('Đã sao chép link!'));
+          });
+
+          frame.querySelector('.download-btn').addEventListener('click', async () => {
+            try {
+              const res = await fetch(url);
+              if (!res.ok) throw new Error('Failed to fetch media');
+              const blob = await res.blob();
+              const objectUrl = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = objectUrl;
+              a.download = `${type.id}.${type.ext}`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(objectUrl);
+            } catch (err) {
+              alert('Lỗi tải về: ' + err.message);
+            }
+          });
+        }
+      });
+
+      if (resultContainer.children.length > 0) {
         resultContainer.classList.remove('hidden');
       } else {
         throw new Error('Không tìm thấy dữ liệu media!');
@@ -37,31 +78,5 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       loading.classList.add('hidden');
     }
-  });
-
-  // Copy and Download Buttons (Dynamic Event Listeners)
-  document.querySelectorAll('.copy-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const type = e.target.closest('.media-frame').id.split('-')[0];
-      const url = mediaData[`${type}_no_watermark`] || mediaData[type]; // hd_no_watermark, sd_no_watermark, audio
-      if (url) {
-        navigator.clipboard.writeText(url).then(() => alert('Đã sao chép link!'));
-      }
-    });
-  });
-
-  document.querySelectorAll('.download-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const type = e.target.closest('.media-frame').id.split('-')[0];
-      const url = mediaData[`${type}_no_watermark`] || mediaData[type];
-      if (url) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${type}.${type === 'audio' ? 'mp3' : 'mp4'}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-    });
   });
 });
