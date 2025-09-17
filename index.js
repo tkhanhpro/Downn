@@ -1,49 +1,47 @@
 const express = require('express');
 const axios = require('axios');
-const { supportedPlatforms } = require('./src/url-support');
+const { downloadMedia } = require('./src/download');
 const path = require('path');
 
 const app = express();
 const port = 3000;
 
-// Middleware to parse JSON bodies (if needed for future expansions)
 app.use(express.json());
-app.use(express.static('public')); // Serve static files from public folder
+app.use(express.static('public'));
 
-// API Endpoint: GET /api/down?url=<media_link>
+// Existing API Endpoint: GET /api/down?url=<media_link>
 app.get('/api/down', async (req, res) => {
   const link = req.query.url;
   if (!link) {
     return res.status(400).json({ error: 'Vui lòng cung cấp link media!' });
   }
-
-  // Check if link is supported
-  const isSupported = supportedPlatforms.some(platform => platform.regex.test(link));
-  if (!isSupported) {
-    return res.status(400).json({ error: 'Link không được hỗ trợ hoặc không phải từ nền tảng hợp lệ!' });
-  }
-
-  const apikey = 'gMIqr8G4z5n';
-  const apiUrl = 'https://api.zm.io.vn/v1/social/autolink';
-
   try {
     const encodedUrl = encodeURIComponent(link);
-    const encodedApikey = encodeURIComponent(apikey);
-    const fullApiUrl = `${apiUrl}?url=${encodedUrl}&apikey=${encodedApikey}`;
-
+    const encodedApikey = encodeURIComponent('gMIqr8G4z5n');
+    const fullApiUrl = `https://api.zm.io.vn/v1/social/autolink?url=${encodedUrl}&apikey=${encodedApikey}`;
     const response = await axios.get(fullApiUrl);
     res.json(response.data);
   } catch (error) {
     console.error(error);
-    let errorMsg = 'Đã xảy ra lỗi khi xử lý yêu cầu!';
-    if (error.response) {
-      errorMsg += `\nStatus: ${error.response.status}\nData: ${JSON.stringify(error.response.data)}`;
-    }
-    res.status(500).json({ error: errorMsg });
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi xử lý yêu cầu!' });
   }
 });
 
-// Serve the frontend
+// New Download Endpoint: GET /download?url=<media_link>
+app.get('/download', async (req, res) => {
+  const link = req.query.url;
+  if (!link) {
+    return res.status(400).json({ error: 'Vui lòng cung cấp link media!' });
+  }
+  try {
+    const result = await downloadMedia(link);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi tải về!' });
+  }
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
