@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Downloader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Media Downloader API</h1>
+    <button id="theme-toggle">Toggle Dark Mode</button>
+  </header>
+  <main>
+    <form id="down-form">
+      <label for="link">Nhập link media:</label>
+      <input type="url" id="link" placeholder="https://example.com/media" required>
+      <button type="submit">Download Data</button>
+    </form>
+    <div id="loading" class="hidden">Đang tải...</div>
+    <pre id="result" class="hidden"></pre>
+    <div id="error" class="hidden"></div>
+  </main>
+  <footer>
+    <p>Supported Platforms: Facebook, Instagram, YouTube, etc.</p>
+  </footer>
+  <script src="tkhanh.js"></script>
+</body>
+</html>
