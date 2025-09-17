@@ -1,20 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('down-form');
+  const linkInput = document.getElementById('link');
+  const submitBtn = document.getElementById('submit-btn');
+  const mp4Btn = document.querySelector('.mp4');
+  const mp3Btn = document.querySelector('.mp3');
   const loading = document.getElementById('loading');
   const result = document.getElementById('result');
   const errorDiv = document.getElementById('error');
-  const themeToggle = document.getElementById('theme-toggle');
-  const body = document.body;
 
-  // Theme Toggle
-  themeToggle.addEventListener('click', () => {
-    body.classList.toggle('dark-mode');
-    themeToggle.textContent = body.classList.contains('dark-mode') ? 'Toggle Light Mode' : 'Toggle Dark Mode';
-  });
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const link = document.getElementById('link').value.trim();
+  submitBtn.addEventListener('click', async () => {
+    const link = linkInput.value.trim();
     if (!link) return;
 
     loading.classList.remove('hidden');
@@ -22,18 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
     errorDiv.classList.add('hidden');
 
     try {
-      const response = await fetch(`/api/down?url=${encodeURIComponent(link)}`);
-      if (!response.ok) {
-        throw new Error(await response.json().error);
-      }
+      const response = await fetch(`/download?url=${encodeURIComponent(link)}`);
+      if (!response.ok) throw new Error(await response.json().error);
       const data = await response.json();
-      result.textContent = JSON.stringify(data, null, 2);
+      result.textContent = `Download: ${data.data.mp4.type} or ${data.data.mp3.type}`;
       result.classList.remove('hidden');
     } catch (error) {
-      errorDiv.textContent = error.message || 'Đã xảy ra lỗi!';
+      errorDiv.textContent = error.message;
       errorDiv.classList.remove('hidden');
     } finally {
       loading.classList.add('hidden');
     }
+  });
+
+  mp4Btn.addEventListener('click', () => {
+    const link = linkInput.value.trim();
+    if (link) window.location.href = `/download?url=${encodeURIComponent(link)}&format=mp4`;
+  });
+
+  mp3Btn.addEventListener('click', () => {
+    const link = linkInput.value.trim();
+    if (link) window.location.href = `/download?url=${encodeURIComponent(link)}&format=mp3`;
   });
 });
