@@ -3,26 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Media Downloader</title>
+  <title>Social Downloader</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Media Downloader API</h1>
-    <button id="theme-toggle">Toggle Dark Mode</button>
+    <h1>Social Downloader</h1>
+    <p>Download videos from YouTube, Instagram, Facebook, and TikTok instantly!</p>
   </header>
   <main>
-    <form id="down-form">
-      <label for="link">Nhập link media:</label>
-      <input type="url" id="link" placeholder="https://example.com/media" required>
-      <button type="submit">Download Data</button>
-    </form>
+    <div class="media-card">
+      <img src="https://via.placeholder.com/150" alt="Media Preview" class="preview">
+      <h2>Xem video này trước khi điện thoại hủy hoại bạn...</h2>
+      <div class="download-options">
+        <button class="download-btn mp4">🎥 MP4 Video</button>
+        <button class="download-btn mp3">🎵 Audio Only (MP3)</button>
+      </div>
+      <input type="url" id="link" placeholder="Nhập link media..." required>
+      <button id="submit-btn">Tải Về</button>
+    </div>
     <div id="loading" class="hidden">Đang tải...</div>
-    <pre id="result" class="hidden"></pre>
+    <div id="result" class="hidden"></div>
     <div id="error" class="hidden"></div>
   </main>
   <footer>
-    <p>Supported Platforms: Facebook, Instagram, YouTube, etc.</p>
+    <p>Powered by Chill-Downloader</p>
   </footer>
   <script src="tkhanh.js"></script>
 </body>
